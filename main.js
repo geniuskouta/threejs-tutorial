@@ -7,7 +7,6 @@ camera.position.set(0, 0, 5)
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setAnimationLoop( animate );
 document.body.appendChild( renderer.domElement );
 
 const light = new THREE.DirectionalLight(0xffffff, 2);
@@ -18,20 +17,36 @@ const ambientLight = new THREE.AmbientLight(0x404040, 1); // soft white light
 scene.add(ambientLight);
 
 let object;
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+
 function animate() {
     if(object) {
-        object.rotation.x += 0.01;
-        object.rotation.y += 0.01;
-        renderer.render( scene, camera );
+        object.rotation.x = -1.2 + mouseX + 2.5 / window.innerHeight;
+        object.rotation.y = -3 + mouseY / window.innerWidth * 3;
     }
+    renderer.render( scene, camera );
 }
 
-renderer.setAnimationLoop( animate );
 
 const loader = new GLTFLoader();
 loader.load( 'octopus.glb', function ( gltf ) {
-	scene.add( gltf.scene );
+    scene.add( gltf.scene );
     object = gltf.scene
 }, undefined, function ( error ) {    
     console.error( error );
 } );
+
+// resize
+window.addEventListener("resize", function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+})
+
+document.onmousemove = (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+}
+
+renderer.setAnimationLoop( animate );
